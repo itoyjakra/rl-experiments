@@ -1,8 +1,10 @@
+"""Policy for balancing cart pole."""
+
+import config as cfg
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.distributions import Categorical
-import config as cfg
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
