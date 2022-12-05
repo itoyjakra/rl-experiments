@@ -3,6 +3,8 @@
 import torch
 from pong_network import PongNetwork
 
+MAPPED_ACTION = {0: 4, 1: 5}
+
 
 class AgentReinforce:
     """A REINFORCE Agent"""
@@ -18,6 +20,9 @@ class AgentReinforce:
     def act(self, state):
         """Returns the action for the state according to policy."""
         with torch.no_grad():
-            action = self.network(state)
+            action, log_prob = self.network(state)
 
-        return torch.argmax(action)
+        # print(f"{log_prob=}")
+        action = MAPPED_ACTION[action]
+
+        return action, log_prob

@@ -1,8 +1,10 @@
-from turtle import forward
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
+"""Polic for playing pong."""
+
+import numpy as np
 import pong_config as pc
+import torch
+import torch.nn.functional as F
+from torch import nn
 
 
 class PongNetwork(nn.Module):
@@ -32,12 +34,22 @@ class PongNetwork(nn.Module):
         self.fc = nn.Sequential(
             nn.Linear(pc.input_size_fc1, 512), nn.ReLU(), nn.Linear(512, num_actions)
         )
+        # self.sigmoid = nn.Sigmoid()
 
     def forward(self, state):
         """Maps state to action."""
         # conv_out = self.conv(state)
-        print(state.shape)
-        print(self.conv(state).shape)
+        # print(len(state))
+        # print(self.conv(state).shape)
         conv_out = self.conv(state).view(state.size()[0], -1)
-        print(conv_out.shape)
-        return self.fc(conv_out)
+        # x = self.fc(conv_out)
+        # print(f"{x=}")
+        prob_actions = F.softmax(self.fc(conv_out))
+        # print(f"{prob_actions=}")
+        probs = prob_actions.squeeze(0).detach().numpy()
+        # print(f"{probs=}")
+        action = np.random.choice([0, 1], p=probs)
+        # print(f"{action=}")
+        log_prob = torch.log(prob_actions.squeeze(0))[action]
+        # print(f"{log_prob=}")
+        return action, log_prob
